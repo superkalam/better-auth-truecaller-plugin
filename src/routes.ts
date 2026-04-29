@@ -138,6 +138,7 @@ export const verifyTruecallerAndroid = (
       return ctx.json({
         user: serializeUser(user),
         session: { token: session.token, expiresAt: session.expiresAt },
+        isNewUser,
       });
     },
   );
@@ -231,6 +232,7 @@ export const verifyTruecallerIOS = (
       return ctx.json({
         user: serializeUser(user),
         session: { token: session.token, expiresAt: session.expiresAt },
+        isNewUser,
       });
     },
   );

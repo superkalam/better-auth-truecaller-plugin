@@ -1,6 +1,6 @@
 import * as better_auth from 'better-auth';
-import { t as truecaller } from './index-DfAlvkVl.js';
-export { R as RequiredTruecallerOptions, T as TRUECALLER_ERROR_CODES, a as TruecallerConfig, b as TruecallerNormalizedIdentity, c as TruecallerOptions, d as TruecallerParsedPayloadResult, e as TruecallerPlatform, f as TruecallerPublicKeyResponse, g as TruecallerSignatureVerificationResult, h as TruecallerVerificationResult, U as UserWithTruecaller } from './index-DfAlvkVl.js';
+import { t as truecaller } from './index-BS_9L7jK.js';
+export { R as RequiredTruecallerOptions, T as TRUECALLER_ERROR_CODES, a as TruecallerConfig, b as TruecallerNormalizedIdentity, c as TruecallerOptions, d as TruecallerParsedPayloadResult, e as TruecallerPlatform, f as TruecallerPublicKeyResponse, g as TruecallerSignatureVerificationResult, h as TruecallerVerificationResult, U as UserWithTruecaller } from './index-BS_9L7jK.js';
 import 'better-call';
 import 'zod/v4/core';
 import 'zod';

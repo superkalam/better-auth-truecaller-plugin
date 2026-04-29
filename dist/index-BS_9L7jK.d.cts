@@ -264,6 +264,7 @@ declare const truecaller: (options: TruecallerOptions) => {
                 token: string;
                 expiresAt: Date;
             };
+            isNewUser: boolean;
         }>;
         verifyTruecallerIOS: better_call.StrictEndpoint<"/truecaller/verify-ios", {
             method: "POST";
@@ -319,6 +320,7 @@ declare const truecaller: (options: TruecallerOptions) => {
                 token: string;
                 expiresAt: Date;
             };
+            isNewUser: boolean;
         }>;
     };
     schema: {

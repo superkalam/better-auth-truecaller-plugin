@@ -4540,7 +4540,8 @@ var verifyTruecallerAndroid = (opts, config2) => createAuthEndpoint(
     await setSessionCookie(ctx, { session, user });
     return ctx.json({
       user: serializeUser(user),
-      session: { token: session.token, expiresAt: session.expiresAt }
+      session: { token: session.token, expiresAt: session.expiresAt },
+      isNewUser
     });
   }
 );
@@ -4608,7 +4609,8 @@ var verifyTruecallerIOS = (opts, config2) => createAuthEndpoint(
     await setSessionCookie(ctx, { session, user });
     return ctx.json({
       user: serializeUser(user),
-      session: { token: session.token, expiresAt: session.expiresAt }
+      session: { token: session.token, expiresAt: session.expiresAt },
+      isNewUser
     });
   }
 );
