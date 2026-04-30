@@ -128,7 +128,13 @@ export const verifyTruecallerAndroid = (
         );
       }
 
-      const session = await ctx.context.internalAdapter.createSession(user.id);
+      // [ADDED] Run session creation and onLoginSuccess hook in parallel — before session exists
+      const [session, additionalData] = await Promise.all([
+        ctx.context.internalAdapter.createSession(user.id),
+        opts.onLoginSuccess
+          ? opts.onLoginSuccess({ user, isNewUser, platform: "android" as TruecallerPlatform }, ctx)
+          : Promise.resolve(undefined),
+      ]);
       if (!session) {
         throw new APIError("INTERNAL_SERVER_ERROR", { message: BASE_ERROR_CODES.FAILED_TO_CREATE_SESSION.message });
       }
@@ -139,6 +145,8 @@ export const verifyTruecallerAndroid = (
         user: serializeUser(user),
         session: { token: session.token, expiresAt: session.expiresAt },
         isNewUser,
+        // [ADDED] additionalData: injected by the onLoginSuccess hook, omitted when hook not configured
+        ...(additionalData !== undefined ? { additionalData } : {}),
       });
     },
   );
@@ -222,7 +230,13 @@ export const verifyTruecallerIOS = (
         );
       }
 
-      const session = await ctx.context.internalAdapter.createSession(user.id);
+      // [ADDED] Run session creation and onLoginSuccess hook in parallel — before session exists
+      const [session, additionalData] = await Promise.all([
+        ctx.context.internalAdapter.createSession(user.id),
+        opts.onLoginSuccess
+          ? opts.onLoginSuccess({ user, isNewUser, platform: "ios" as TruecallerPlatform }, ctx)
+          : Promise.resolve(undefined),
+      ]);
       if (!session) {
         throw new APIError("INTERNAL_SERVER_ERROR", { message: BASE_ERROR_CODES.FAILED_TO_CREATE_SESSION.message });
       }
@@ -233,6 +247,8 @@ export const verifyTruecallerIOS = (
         user: serializeUser(user),
         session: { token: session.token, expiresAt: session.expiresAt },
         isNewUser,
+        // [ADDED] additionalData: injected by the onLoginSuccess hook, omitted when hook not configured
+        ...(additionalData !== undefined ? { additionalData } : {}),
       });
     },
   );

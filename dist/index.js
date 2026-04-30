@@ -4533,7 +4533,10 @@ var verifyTruecallerAndroid = (opts, config2) => createAuthEndpoint(
         )
       );
     }
-    const session = await ctx.context.internalAdapter.createSession(user.id);
+    const [session, additionalData] = await Promise.all([
+      ctx.context.internalAdapter.createSession(user.id),
+      opts.onLoginSuccess ? opts.onLoginSuccess({ user, isNewUser, platform: "android" }, ctx) : Promise.resolve(void 0)
+    ]);
     if (!session) {
       throw new APIError("INTERNAL_SERVER_ERROR", { message: BASE_ERROR_CODES.FAILED_TO_CREATE_SESSION.message });
     }
@@ -4541,7 +4544,9 @@ var verifyTruecallerAndroid = (opts, config2) => createAuthEndpoint(
     return ctx.json({
       user: serializeUser(user),
       session: { token: session.token, expiresAt: session.expiresAt },
-      isNewUser
+      isNewUser,
+      // [ADDED] additionalData: injected by the onLoginSuccess hook, omitted when hook not configured
+      ...additionalData !== void 0 ? { additionalData } : {}
     });
   }
 );
@@ -4602,7 +4607,10 @@ var verifyTruecallerIOS = (opts, config2) => createAuthEndpoint(
         )
       );
     }
-    const session = await ctx.context.internalAdapter.createSession(user.id);
+    const [session, additionalData] = await Promise.all([
+      ctx.context.internalAdapter.createSession(user.id),
+      opts.onLoginSuccess ? opts.onLoginSuccess({ user, isNewUser, platform: "ios" }, ctx) : Promise.resolve(void 0)
+    ]);
     if (!session) {
       throw new APIError("INTERNAL_SERVER_ERROR", { message: BASE_ERROR_CODES.FAILED_TO_CREATE_SESSION.message });
     }
@@ -4610,7 +4618,9 @@ var verifyTruecallerIOS = (opts, config2) => createAuthEndpoint(
     return ctx.json({
       user: serializeUser(user),
       session: { token: session.token, expiresAt: session.expiresAt },
-      isNewUser
+      isNewUser,
+      // [ADDED] additionalData: injected by the onLoginSuccess hook, omitted when hook not configured
+      ...additionalData !== void 0 ? { additionalData } : {}
     });
   }
 );

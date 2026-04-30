@@ -166,6 +166,33 @@ interface TruecallerOptions {
         platform: TruecallerPlatform;
     }, ctx: GenericEndpointContext) => Awaitable<void>;
     /**
+     * Called after the user is found or created, **before the session is created**.
+     *
+     * Executes in parallel with `createSession` — both run at the same time so there
+     * is no added latency compared to running sequentially. Because it fires before
+     * the session exists, do NOT read `ctx` for a session token here; use `user.id`
+     * to query any additional data you need.
+     *
+     * The returned object is attached to the login response under the `additionalData` key,
+     * allowing the client to receive any extra data in the same round-trip as the login itself.
+     *
+     * Fires on both `verifyAndroid` and `verifyIOS` endpoints.
+     *
+     * @example
+     * ```ts
+     * onLoginSuccess: async ({ user, isNewUser, platform }) => {
+     *   const profile = await db.profile.findUnique({ where: { userId: user.id } });
+     *   return { profile };
+     * }
+     * // Login response: { user, session, isNewUser, additionalData: { profile: { ... } } }
+     * ```
+     */
+    onLoginSuccess?: (data: {
+        user: UserWithTruecaller;
+        isNewUser: boolean;
+        platform: TruecallerPlatform;
+    }, ctx: GenericEndpointContext) => Awaitable<Record<string, unknown>>;
+    /**
      * Custom schema overrides.
      * Allows remapping DB column names via `{ fields: { phoneNumber: "phone" } }`.
      */
@@ -248,6 +275,7 @@ declare const truecaller: (options: TruecallerOptions) => {
                 };
             };
         }, {
+            additionalData?: Record<string, unknown> | undefined;
             user: {
                 id: string;
                 email: string;
@@ -304,6 +332,7 @@ declare const truecaller: (options: TruecallerOptions) => {
                 };
             };
         }, {
+            additionalData?: Record<string, unknown> | undefined;
             user: {
                 id: string;
                 email: string;

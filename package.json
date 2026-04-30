@@ -1,6 +1,6 @@
 {
   "name": "better-auth-truecaller",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Better Auth plugin for TrueCaller authentication — supports Android OAuth flow and iOS signed payload verification.",
   "type": "module",
   "exports": {

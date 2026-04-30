@@ -87,12 +87,57 @@ Flow: fetch Truecaller public keys → verify signature → parse payload → ch
 | `signUpOnVerification.getTempName` | `(phone) => string` | — | Truecaller name → phone | Returns a temporary display name |
 | `onVerificationSuccess` | `(data, ctx) => void` | — | — | Called after identity is verified, before user lookup/creation |
 | `callbackAfterVerification` | `(data, ctx) => void` | — | — | Called after the user is found or created |
+| `onLoginSuccess` | `(data, ctx) => Promise<Record<string, unknown>>` | — | — | Inject additional data into the login response. See below. |
 | `oauthBaseUrl` | `string` | — | region default | Override Truecaller OAuth base URL |
 | `verificationBaseUrl` | `string` | — | region default | Override Truecaller verification base URL |
 | `publicKeyUrl` | `string` | — | `https://api4.truecaller.com/v1/key` | Override Truecaller public key URL |
 | `upstreamTimeoutMs` | `number` | — | `15000` | HTTP timeout for Truecaller API calls |
 | `publicKeyCacheTTLMs` | `number` | — | `300000` | In-memory public key cache TTL (iOS only) |
 | `schema` | `object` | — | — | Remap DB column names |
+
+---
+
+## Injecting additional data into the login response (`onLoginSuccess`)
+
+Use `onLoginSuccess` to fetch additional data on the server and return it in the same
+login response — eliminating a client round-trip.
+
+**Timing:** the hook is called **before the session is created**, running in parallel
+with `createSession`. This means:
+- No extra latency — it overlaps with the session write.
+- Do **not** read a session token from `ctx` inside this hook; use `user.id` instead.
+- Fires on both `verifyAndroid` and `verifyIOS` endpoints.
+
+The returned object is attached to the response under the `additionalData` key.
+
+```ts
+truecaller({
+  clientId: process.env.TRUECALLER_CLIENT_ID!,
+
+  onLoginSuccess: async ({ user, isNewUser, platform }) => {
+    const profile = await db.profile.findUnique({ where: { userId: user.id } });
+    return { profile };
+  },
+})
+```
+
+**Login response shape:**
+```json
+{
+  "user": { "id": "...", "phoneNumber": "...", "..." },
+  "session": { "token": "...", "expiresAt": "..." },
+  "isNewUser": false,
+  "additionalData": {
+    "profile": { "..." }
+  }
+}
+```
+
+**Client access:**
+```ts
+const result = await authClient.truecaller.verifyAndroid({ authorizationCode });
+const profile = result.data?.additionalData?.profile;
+```
 
 ## Database schema
 
