@@ -59,6 +59,9 @@ export const truecaller = (options: TruecallerOptions) => {
     upstreamTimeoutMs: options.upstreamTimeoutMs ?? 15000,
     publicKeyCacheTTLMs: options.publicKeyCacheTTLMs ?? 5 * 60 * 1000,
     ...options,
+    populateFromTruecaller: {
+      name: options.populateFromTruecaller?.name ?? true,
+    },
     // Always use camelCase field names in plugin code;
     // schema config translates these to the actual DB column names.
     phoneNumber: "phoneNumber",

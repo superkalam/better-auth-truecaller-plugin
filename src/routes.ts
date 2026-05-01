@@ -395,8 +395,9 @@ async function findOrCreateUserFromTruecaller(
 
   const fullPhone = `${countryCode}${phoneNumber}`;
   const tempEmail = opts.signUpOnVerification.getTempEmail(fullPhone);
+  const useTruecallerName = opts.populateFromTruecaller.name;
   const userName =
-    name ||
+    (useTruecallerName && name) ||
     (opts.signUpOnVerification.getTempName
       ? opts.signUpOnVerification.getTempName(fullPhone)
       : fullPhone);

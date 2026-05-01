@@ -95,6 +95,27 @@ export interface TruecallerOptions {
   publicKeyCacheTTLMs?: number;
 
   /**
+   * Controls which fields from TrueCaller's identity response are written to the user record.
+   *
+   * Fields default to `true` (populated). Set a field to `false` to skip it — the plugin
+   * will fall back to the `signUpOnVerification` helper (e.g. `getTempName`) or a safe default.
+   *
+   * @example
+   * ```ts
+   * // Don't use the TrueCaller-provided name; always call getTempName instead.
+   * populateFromTruecaller: { name: false }
+   * ```
+   */
+  populateFromTruecaller?: {
+    /**
+     * Whether to use the name returned by TrueCaller.
+     * When `false`, `signUpOnVerification.getTempName` (or the full phone number) is used instead.
+     * @default true
+     */
+    name?: boolean;
+  };
+
+  /**
    * Auto-create a user account after successful TrueCaller verification.
    *
    * A temporary email is required by Better Auth's user model. You can update
@@ -171,7 +192,7 @@ export interface TruecallerOptions {
 }
 
 export interface RequiredTruecallerOptions
-  extends Omit<TruecallerOptions, "signUpOnVerification"> {
+  extends Omit<TruecallerOptions, "signUpOnVerification" | "populateFromTruecaller"> {
   clientId: string;
   region: "eu" | "global";
   upstreamTimeoutMs: number;
@@ -179,6 +200,9 @@ export interface RequiredTruecallerOptions
   signUpOnVerification?: {
     getTempEmail: (phoneNumber: string) => string;
     getTempName?: (phoneNumber: string) => string;
+  };
+  populateFromTruecaller: {
+    name: boolean;
   };
   // Resolved DB field name mappings (camelCase; schema config translates to actual column names)
   phoneNumber: string;

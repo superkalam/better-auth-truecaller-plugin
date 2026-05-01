@@ -4756,7 +4756,8 @@ async function findOrCreateUserFromTruecaller(identity, opts, ctx) {
   }
   const fullPhone = `${countryCode}${phoneNumber}`;
   const tempEmail = opts.signUpOnVerification.getTempEmail(fullPhone);
-  const userName = name || (opts.signUpOnVerification.getTempName ? opts.signUpOnVerification.getTempName(fullPhone) : fullPhone);
+  const useTruecallerName = opts.populateFromTruecaller.name;
+  const userName = useTruecallerName && name || (opts.signUpOnVerification.getTempName ? opts.signUpOnVerification.getTempName(fullPhone) : fullPhone);
   const userPayload = {
     email: tempEmail,
     name: userName,
@@ -4839,6 +4840,9 @@ var truecaller = (options) => {
     upstreamTimeoutMs: options.upstreamTimeoutMs ?? 15e3,
     publicKeyCacheTTLMs: options.publicKeyCacheTTLMs ?? 5 * 60 * 1e3,
     ...options,
+    populateFromTruecaller: {
+      name: options.populateFromTruecaller?.name ?? true
+    },
     // Always use camelCase field names in plugin code;
     // schema config translates these to the actual DB column names.
     phoneNumber: "phoneNumber",
